@@ -10,7 +10,18 @@ def criar_projeto_flask(nome_projeto):
     
     # Cria os arquivos dentro da pasta do projeto
     with open(os.path.join(nome_projeto, 'README.md'), 'w') as f:
-        f.write("# Meu Projeto Flask\n\nEste é um projeto Flask básico.")
+        f.write('''# Meu Projeto Flask\n\nEste é um projeto Flask básico.     
+# Build project
+
+```bash
+docker build -t flaskfy-app .
+```
+
+# Run project
+
+```bash
+docker run -p 8080:8080 flaskfy-app
+```''')
     
     with open(os.path.join(nome_projeto, '.gitignore'), 'w') as f:
         f.write("# Arquivos e pastas a serem ignorados pelo Git")
@@ -209,6 +220,29 @@ def table_user():
         print("App not connected to database")
 
 table_user()
+''')
+        
+    # Create Dockerfile
+    with open(os.path.join(nome_projeto, 'Dockerfile'), 'w') as f:
+        f.write('''FROM python:3.9-slim
+
+WORKDIR /app  # application directory
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8080
+ENV FLASK_APP=main.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Run the Flask application
+CMD ["flask", "run", "-p", "8080"]
+
+''')
+    
+    # Create requirements.txt
+    with open(os.path.join(nome_projeto, 'requirements.txt'), 'w') as f:
+        f.write('''flask
+pymysql
 ''')
     
     print(f"Projeto '{nome_projeto}' criado com sucesso!")
